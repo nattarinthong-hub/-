@@ -16,9 +16,11 @@ p{color:var(--mut);margin:6px 0 20px;font-size:15px}.f{display:grid;gap:12px}.sm
 @keyframes op{to{transform:rotateX(180deg);z-index:1}}@keyframes up{to{transform:translateY(-70px)}}
 #res{display:none;margin-top:90px;animation:in 1s 1.8s both}@keyframes in{from{opacity:0;transform:translateY(12px)}}
 .hint{margin:14px 0;padding:18px;border-radius:16px;background:linear-gradient(135deg,#ff6fa530,#9b7bff30);border:1px solid #ff6fa566;font-size:20px;line-height:1.5;box-shadow:0 0 30px #ff6fa533}
+#sid{position:relative;z-index:5;display:block;pointer-events:auto;user-select:text;-webkit-user-select:text;touch-action:manipulation;caret-color:#fff;color:#f4effe}
+#form,.f{position:relative;z-index:2}
 </style></head><body><main><div class="card glass"><div class="logo">BUITI · ITI</div>
 <div id="form"><div class="heart">💗</div><h1>จดหมายจากพี่รหัส</h1><p>กรอกรหัสนักศึกษาของน้องเพื่อเปิดจดหมายจากพี่รหัสของคุณ</p>
-<div class="f"><input id="sid" inputmode="numeric" maxlength="10" placeholder="กรอกรหัสนักศึกษา" autocomplete="off"><button id="go" class="btn">เปิดจดหมาย</button></div><div id="msg"></div><p class="sm">A little surprise is waiting for you.</p></div>
+<div class="f"><input id="sid" type="text" inputmode="numeric" maxlength="10" placeholder="กรอกรหัสนักศึกษา" autocomplete="off" autocapitalize="off" spellcheck="false"><button id="go" class="btn">เปิดจดหมาย</button></div><div id="msg"></div><p class="sm">A little surprise is waiting for you.</p></div>
 <div id="out" style="display:none"><div class="env"><div class="bk"></div><div class="lt">💌</div><div class="fl"></div><div class="fr"></div></div>
 <div id="res"><h1>You’ve got a letter!</h1><p style="margin:0">Your Senior Code is…</p><div class="hint" id="hint"></div><p>Someone is waiting to get to know you.</p><button class="btn ghost" onclick="location.reload()">กลับหน้าแรก</button></div></div></div></main>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script><script src="config.js"></script><script src="fx.js"></script>
