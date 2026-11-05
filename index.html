@@ -16,25 +16,37 @@ p{color:var(--mut);margin:6px 0 20px;font-size:15px}.f{display:grid;gap:12px}.sm
 @keyframes op{to{transform:rotateX(180deg);z-index:1}}@keyframes up{to{transform:translateY(-70px)}}
 #res{display:none;margin-top:90px;animation:in 1s 1.8s both}@keyframes in{from{opacity:0;transform:translateY(12px)}}
 .hint{margin:14px 0;padding:18px;border-radius:16px;background:linear-gradient(135deg,#ff6fa530,#9b7bff30);border:1px solid #ff6fa566;font-size:20px;line-height:1.5;box-shadow:0 0 30px #ff6fa533}
-#sid{position:relative;z-index:5;display:block;pointer-events:auto;user-select:text;-webkit-user-select:text;touch-action:manipulation;caret-color:#fff;color:#f4effe}
-#form,.f{position:relative;z-index:2}
+
+p,.hint{text-wrap:balance}
+#out{position:relative}
+.burst{position:absolute;left:50%;top:75px;pointer-events:none;z-index:5;color:var(--rose);animation:bu 1.6s ease-out forwards;text-shadow:0 0 10px currentColor}
+@keyframes bu{from{opacity:1;transform:translate(-50%,-50%) scale(.4)}to{opacity:0;transform:translate(calc(-50% + var(--dx)),calc(-50% + var(--dy))) scale(1.2) rotate(var(--r))}}
+.lbl{font-size:13px;color:#ffd0e2;letter-spacing:.08em;margin:18px 0 0}
+.hint::before{content:'“';margin-right:4px;color:var(--rose)}.hint::after{content:'”';margin-left:4px;color:var(--rose)}
+.fin{font-size:14px;color:#c9b6ff}
+.btn:focus-visible,input:focus-visible{outline:2px solid #ffd0e2;outline-offset:2px}
+@media(max-width:420px){.card{padding:30px 20px}h1{font-size:26px}.hint{font-size:18px}}
+@media(prefers-reduced-motion:reduce){*{animation-duration:.01s!important;animation-delay:0s!important}.burst{display:none}}
 </style></head><body><main><div class="card glass"><div class="logo">BUITI · ITI</div>
 <div id="form"><div class="heart">💗</div><h1>จดหมายจากพี่รหัส</h1><p>กรอกรหัสนักศึกษาของน้องเพื่อเปิดจดหมายจากพี่รหัสของคุณ</p>
-<div class="f"><input id="sid" type="text" inputmode="numeric" maxlength="10" placeholder="กรอกรหัสนักศึกษา" autocomplete="off" autocapitalize="off" spellcheck="false"><button id="go" class="btn">เปิดจดหมาย</button></div><div id="msg"></div><p class="sm">A little surprise is waiting for you.</p></div>
+<div class="f"><input id="sid" type="text" inputmode="numeric" pattern="[0-9]*" maxlength="10" placeholder="กรอกรหัสนักศึกษา" autocomplete="off"><button id="go" class="btn">เปิดจดหมาย</button></div><div id="msg"></div><p class="sm">A little surprise is waiting for you.</p></div>
 <div id="out" style="display:none"><div class="env"><div class="bk"></div><div class="lt">💌</div><div class="fl"></div><div class="fr"></div></div>
-<div id="res"><h1>You’ve got a letter!</h1><p style="margin:0">Your Senior Code is…</p><div class="hint" id="hint"></div><p>Someone is waiting to get to know you.</p><button class="btn ghost" onclick="location.reload()">กลับหน้าแรก</button></div></div></div></main>
+<div id="res"><h1>You’ve got a letter!</h1><p style="margin:0">Your Senior Code is…</p><div class="lbl">คำใบ้จากพี่รหัสของคุณ</div><div class="hint" id="hint"></div><p>Someone is waiting to get to know you.</p><p class="fin">Good luck finding your senior! ♡</p><button class="btn ghost" onclick="location.reload()">กลับหน้าแรก</button></div></div></div></main>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script><script src="config.js"></script><script src="fx.js"></script>
 <script>
-const sb=supabase.createClient(CFG.URL,CFG.KEY),$=i=>document.getElementById(i);
+const $=i=>document.getElementById(i);
+const sb=window.supabase?supabase.createClient(CFG.URL,CFG.KEY):null;
+const burst=()=>{const o=$('out'),c=['♥','✦','♡','✧'];for(let i=0;i<26;i++){const e=document.createElement('i');e.className='burst';e.textContent=c[i%4];const a=Math.random()*Math.PI*2,d=70+Math.random()*130;e.style.cssText=`--dx:${Math.cos(a)*d}px;--dy:${Math.sin(a)*d-40}px;--r:${(Math.random()*80-40)}deg;font-size:${10+Math.random()*14}px;animation-delay:${Math.random()*.4}s;font-style:normal;color:${i%3?'#ff6fa5':'#c9b6ff'}`;o.append(e);setTimeout(()=>e.remove(),2300)}};
 const err=t=>$('msg').textContent=t;
 $('go').onclick=async()=>{const id=$('sid').value.trim();err('');
  if(!/^\d{10}$/.test(id))return err('กรุณากรอกรหัสนักศึกษา 10 หลักให้ถูกต้อง');
  $('go').disabled=true;$('go').textContent='กำลังเปิดจดหมาย…';
- try{const{data,error}=await sb.rpc('get_letter',{p_id:id});if(error)throw error;await new Promise(r=>setTimeout(r,800));
+ try{if(!sb)throw new Error('supabase not loaded');const{data,error}=await sb.rpc('get_letter',{p_id:id});if(error)throw error;await new Promise(r=>setTimeout(r,800));
   if(data.status==='not_found')err('ไม่พบรหัสนักศึกษานี้ในระบบ');
   else if(data.status==='unmatched')err('ยังไม่พบคู่ของคุณ โปรดรอประกาศผลอีกครั้ง');
-  else{$('hint').textContent=data.hint;$('form').style.display='none';$('out').style.display='block';$('res').style.display='block'}
+  else{$('hint').textContent=data.hint;$('form').style.display='none';$('out').style.display='block';$('res').style.display='block';setTimeout(burst,900)}
  }catch(e){err('เกิดข้อผิดพลาด กรุณาลองใหม่อีกครั้ง')}
  $('go').disabled=false;$('go').textContent='เปิดจดหมาย'};
-$('sid').onkeydown=e=>e.key==='Enter'&&$('go').click();
+$('sid').addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();$('go').click()}});
+$('sid').addEventListener('input',e=>{e.target.value=e.target.value.replace(/\D/g,'').slice(0,10)});
 </script></body></html>
